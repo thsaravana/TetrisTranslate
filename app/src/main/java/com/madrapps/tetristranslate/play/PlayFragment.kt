@@ -1,7 +1,7 @@
 package com.madrapps.tetristranslate.play
 
 import android.animation.Animator
-import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +18,7 @@ class PlayFragment : DaggerFragment(), View.OnClickListener {
     @Inject
     lateinit var viewModel: PlayViewModel
 
-    private lateinit var animator: ObjectAnimator
+    private lateinit var animator: ValueAnimator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,9 +36,18 @@ class PlayFragment : DaggerFragment(), View.OnClickListener {
 
         answerContainer.viewTreeObserver.addOnGlobalLayoutListener {
             val height = answerContainer.height
-            animator = ObjectAnimator.ofFloat(answer, "y", 0f, height.toFloat()).apply {
-                duration = 1000
+            val step = height / 10f
+            animator = ValueAnimator.ofFloat(0f, height.toFloat()).apply {
+                duration = 10000 / 2
                 interpolator = LinearInterpolator()
+                setFloatValues(
+                    0f, 0f, step * 1, step * 1, step * 2, step * 2, step * 3, step * 3, step * 4, step * 4,
+                    step * 5, step * 5, step * 6, step * 6, step * 7, step * 7, step * 8, step * 8, step * 9, step * 9
+                )
+                addUpdateListener {
+                    answer.y = it.animatedValue as Float
+                }
+                repeatCount = 5
                 start()
             }
 
